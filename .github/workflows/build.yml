@@ -1,0 +1,29 @@
+name: build
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+
+          - CC: gcc
+
+          - CC: clang
+
+    name: build with ${{ matrix.CC }}
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.CC }}
+      CFLAGS: -Wall -Wextra -Werror
+
+    steps:
+      - uses: actions/checkout@v6
+      - run: sudo apt-get update
+      - run: sudo apt-get -yq install build-essential libpipewire-0.3-dev libspa-0.2-dev
+      - run: ./bootstrap
+      - run: ./configure
+      - run: make
