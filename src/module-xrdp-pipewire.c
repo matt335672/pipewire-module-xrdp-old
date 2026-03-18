@@ -62,6 +62,13 @@
 #include <pipewire/impl.h>
 #include <pipewire/i18n.h>
 
+#ifdef __GNUC__
+// Clang too
+#define ATTR_UNUSED __attribute__ ((unused))
+#else
+#define ATTR_UNUSED
+#endif
+
 /** \page page_module_pipe_tunnel PipeWire Module: Unix Pipe Tunnel
  *
  * The pipe-tunnel module provides a source or sink that tunnels all audio to
@@ -209,7 +216,10 @@ struct impl {
 	int display_num; // for debug
 };
 
-static void do_unload_module(void *obj, void *data, int res, uint32_t id)
+static void do_unload_module(void *obj ATTR_UNUSED,
+                             void *data,
+                             int res ATTR_UNUSED,
+                             uint32_t id ATTR_UNUSED)
 {
 	struct impl *impl = data;
 	pw_impl_module_destroy(impl->module);
@@ -320,8 +330,10 @@ static int close_send_source(struct impl *impl) {
     return 8;
 }
 
-static void stream_state_changed_sink(void *d, enum pw_stream_state old,
-		enum pw_stream_state state, const char *error)
+static void stream_state_changed_sink(void *d,
+                enum pw_stream_state old ATTR_UNUSED,
+		enum pw_stream_state state,
+                const char *error ATTR_UNUSED)
 {
 	struct impl *impl = d;
 	switch (state) {
@@ -341,8 +353,10 @@ static void stream_state_changed_sink(void *d, enum pw_stream_state old,
     pw_log_debug("stream_state_changed:%s", pw_stream_state_as_string (state));
 }
 
-static void stream_state_changed_source(void *d, enum pw_stream_state old,
-		enum pw_stream_state state, const char *error)
+static void stream_state_changed_source(void *d,
+                enum pw_stream_state old ATTR_UNUSED,
+		enum pw_stream_state state,
+                const char *error ATTR_UNUSED)
 {
 	struct impl *impl = d;
 	switch (state) {
